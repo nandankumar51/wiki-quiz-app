@@ -2,30 +2,12 @@ import os
 from typing import Dict, List
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
-try:
-    from langchain_core.output_parsers import PydanticOutputParser
-except ImportError:
-    from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import json
+import re
 
 load_dotenv()
-
-
-class QuizQuestionSchema(BaseModel):
-    """Schema for a single quiz question."""
-    question: str = Field(description="The quiz question text")
-    options: List[str] = Field(description="Four answer options (A-D)")
-    answer: str = Field(description="The correct answer from the options")
-    difficulty: str = Field(description="Difficulty level: easy, medium, or hard")
-    explanation: str = Field(description="Short explanation of the answer")
-
-
-class QuizGenerationSchema(BaseModel):
-    """Schema for complete quiz generation output."""
-    quiz: List[QuizQuestionSchema] = Field(description="List of 5-10 quiz questions")
-    related_topics: List[str] = Field(description="3-5 related Wikipedia topics")
 
 
 class LLMQuizGenerator:
@@ -43,11 +25,8 @@ class LLMQuizGenerator:
             model="gemini-1.5-flash",
             google_api_key=self.api_key,
             temperature=0.7,
-            max_tokens=2048
+            max_tokens=4096
         )
-        
-        # Setup parser
-        self.parser = PydanticOutputParser(pydantic_object=QuizGenerationSchema)
         
         # Quiz generation prompt template
         self.quiz_prompt = PromptTemplate(
@@ -64,27 +43,27 @@ FULL ARTICLE CONTENT:
 
 INSTRUCTIONS:
 1. Generate 7-10 high-quality multiple-choice questions based STRICTLY on the article content
-2. Questions should:
-   - Be factually accurate and directly answerable from the article
-   - Cover different sections and aspects of the topic
-   - Have varying difficulty levels (easy, medium, hard)
-   - Be clear and unambiguous
-3. Each question must have:
-   - Four distinct options (A-D)
-   - One correct answer
-   - A brief explanation citing where in the article the answer can be found
-4. Difficulty levels:
-   - Easy: Basic facts, dates, simple definitions
-   - Medium: Requires understanding connections between concepts
-   - Hard: Deep comprehension, analysis, or inference
-5. NO HALLUCINATION: Only use information explicitly stated in the article
-6. Also suggest 3-5 related Wikipedia topics for further reading (topics that would logically connect to this article)
+2. Questions should cover different sections and have varying difficulty levels (easy, medium, hard)
+3. Each question must have four distinct options, one correct answer, and a brief explanation
+4. NO HALLUCINATION: Only use information explicitly stated in the article
+5. Also suggest 3-5 related Wikipedia topics for further reading
 
-{format_instructions}
+You MUST respond with ONLY valid JSON in exactly this format, no other text:
+{{
+  "quiz": [
+    {{
+      "question": "Question text here",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "answer": "The correct option text",
+      "difficulty": "easy",
+      "explanation": "Brief explanation"
+    }}
+  ],
+  "related_topics": ["Topic 1", "Topic 2", "Topic 3"]
+}}
 
 Generate the quiz now:""",
-            input_variables=["title", "summary", "sections", "content"],
-            partial_variables={"format_instructions": self.parser.get_format_instructions()}
+            input_variables=["title", "summary", "sections", "content"]
         )
     
     def generate_quiz(
@@ -110,28 +89,59 @@ Generate the quiz now:""",
             # Format sections as a readable list
             sections_text = ", ".join(sections) if sections else "No sections"
             
+            # Truncate content to avoid token limits
+            max_content_length = 8000
+            truncated_content = content[:max_content_length] if len(content) > max_content_length else content
+            
             # Generate the prompt
             prompt = self.quiz_prompt.format(
                 title=title,
                 summary=summary,
                 sections=sections_text,
-                content=content
+                content=truncated_content
             )
             
             # Get LLM response
             response = self.llm.invoke(prompt)
             
-            # Parse response
-            try:
-                parsed_output = self.parser.parse(response.content)
-                return {
-                    'quiz': [q.dict() for q in parsed_output.quiz],
-                    'related_topics': parsed_output.related_topics
-                }
-            except Exception as parse_error:
-                # Fallback parsing if structured output fails
-                print(f"Parsing error: {parse_error}")
-                return self._fallback_parse(response.content, title)
+            # Parse JSON from response
+            response_text = response.content
+            
+            # Try to extract JSON from the response
+            # Remove markdown code blocks if present
+            response_text = re.sub(r'```json\s*', '', response_text)
+            response_text = re.sub(r'```\s*', '', response_text)
+            response_text = response_text.strip()
+            
+            # Find JSON object in response
+            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group())
+                if 'quiz' in data and 'related_topics' in data:
+                    # Validate quiz structure
+                    validated_quiz = []
+                    for q in data['quiz']:
+                        if all(k in q for k in ['question', 'options', 'answer', 'difficulty', 'explanation']):
+                            validated_quiz.append({
+                                'question': str(q['question']),
+                                'options': [str(o) for o in q['options'][:4]],
+                                'answer': str(q['answer']),
+                                'difficulty': str(q.get('difficulty', 'medium')),
+                                'explanation': str(q.get('explanation', ''))
+                            })
+                    
+                    if validated_quiz:
+                        return {
+                            'quiz': validated_quiz,
+                            'related_topics': [str(t) for t in data.get('related_topics', [])]
+                        }
+            
+            # If JSON parsing failed, use fallback
+            print(f"Could not parse JSON from LLM response")
+            return {
+                'quiz': self._generate_fallback_quiz(title, summary),
+                'related_topics': self._generate_fallback_topics(title)
+            }
                 
         except Exception as e:
             print(f"Error generating quiz: {e}")
