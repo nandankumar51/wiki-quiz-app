@@ -1,0 +1,131 @@
+{
+  "id": 1,
+  "url": "https://en.wikipedia.org/wiki/Alan_Turing",
+  "title": "Alan Turing",
+  "summary": "Alan Mathison Turing OBE FRS (23 June 1912 – 7 June 1954) was an English mathematician, computer scientist, logician, cryptanalyst, philosopher and theoretical biologist. Turing was highly influential in the development of theoretical computer science, providing a formalisation of the concepts of algorithm and computation with the Turing machine, which can be considered a model of a general-purpose computer. He is widely considered to be the father of theoretical computer science and artificial intelligence.",
+  "key_entities": {
+    "people": [
+      "Alan Turing",
+      "Alonzo Church",
+      "John von Neumann",
+      "Christopher Morcom"
+    ],
+    "organizations": [
+      "University of Cambridge",
+      "Princeton University",
+      "Bletchley Park",
+      "National Physical Laboratory"
+    ],
+    "locations": [
+      "United Kingdom",
+      "Bletchley",
+      "Manchester",
+      "Cambridge"
+    ]
+  },
+  "sections": [
+    "Early life and education",
+    "Career and research",
+    "Cryptanalysis",
+    "Pattern formation and mathematical biology",
+    "Death",
+    "Legacy",
+    "Recognition"
+  ],
+  "quiz": [
+    {
+      "question": "Where did Alan Turing study as an undergraduate?",
+      "options": [
+        "Harvard University",
+        "University of Cambridge",
+        "Oxford University",
+        "Princeton University"
+      ],
+      "answer": "University of Cambridge",
+      "difficulty": "easy",
+      "explanation": "Turing studied at King's College, Cambridge, as mentioned in the 'Early life and education' section."
+    },
+    {
+      "question": "What was Alan Turing's main contribution during World War II?",
+      "options": [
+        "Atomic bomb research",
+        "Breaking the Enigma code",
+        "Inventing radar technology",
+        "Developing jet engines"
+      ],
+      "answer": "Breaking the Enigma code",
+      "difficulty": "medium",
+      "explanation": "Turing worked at Bletchley Park where he played a crucial role in breaking German ciphers, particularly the Enigma machine, as detailed in the 'Cryptanalysis' section."
+    },
+    {
+      "question": "What theoretical concept did Turing introduce that became fundamental to computer science?",
+      "options": [
+        "The Internet Protocol",
+        "The Turing Machine",
+        "The Binary System",
+        "The Compiler"
+      ],
+      "answer": "The Turing Machine",
+      "difficulty": "medium",
+      "explanation": "The Turing Machine, introduced in his 1936 paper, provided a formalization of the concepts of algorithm and computation and is considered a model of a general-purpose computer."
+    },
+    {
+      "question": "In what year did Alan Turing die?",
+      "options": [
+        "1944",
+        "1950",
+        "1954",
+        "1960"
+      ],
+      "answer": "1954",
+      "difficulty": "easy",
+      "explanation": "Alan Turing died on 7 June 1954, as stated in the article's opening paragraph."
+    },
+    {
+      "question": "What test did Turing propose to determine if a machine can exhibit intelligent behavior?",
+      "options": [
+        "The Intelligence Quotient Test",
+        "The Turing Test",
+        "The Logic Test",
+        "The Computation Test"
+      ],
+      "answer": "The Turing Test",
+      "difficulty": "medium",
+      "explanation": "Turing proposed the Turing Test (originally called the 'imitation game') as a criterion of intelligence in machines."
+    },
+    {
+      "question": "What honor was Turing awarded in 1945 for his wartime services?",
+      "options": [
+        "Knight Bachelor",
+        "Order of the British Empire (OBE)",
+        "Victoria Cross",
+        "Nobel Prize"
+      ],
+      "answer": "Order of the British Empire (OBE)",
+      "difficulty": "hard",
+      "explanation": "Turing was appointed an Officer of the Order of the British Empire (OBE) in 1945 for his work during World War II."
+    },
+    {
+      "question": "What field did Turing work on towards the end of his life involving patterns in nature?",
+      "options": [
+        "Quantum physics",
+        "Mathematical biology",
+        "Astrophysics",
+        "Geology"
+      ],
+      "answer": "Mathematical biology",
+      "difficulty": "hard",
+      "explanation": "Turing turned to mathematical biology and worked on morphogenesis - the pattern formation in biological organisms, as mentioned in the article."
+    }
+  ],
+  "related_topics": [
+    "Enigma machine",
+    "Bletchley Park",
+    "Turing Test",
+    "Computer science history",
+    "Cryptography",
+    "Artificial intelligence",
+    "World War II codebreaking"
+  ],
+  "created_at": "2026-02-14T10:30:00Z"
+}
