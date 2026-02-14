@@ -20,21 +20,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware - Allow localhost and production frontend
-allowed_origins = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-]
-
-# Add production frontend URL from environment variable
-frontend_url = os.getenv("FRONTEND_URL")
-if frontend_url:
-    allowed_origins.append(frontend_url)
-
+# CORS middleware - Allow all origins for production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
