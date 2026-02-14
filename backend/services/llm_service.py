@@ -2,7 +2,10 @@ import os
 from typing import Dict, List
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
+try:
+    from langchain_core.output_parsers import PydanticOutputParser
+except ImportError:
+    from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import json
